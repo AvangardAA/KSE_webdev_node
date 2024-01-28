@@ -21,7 +21,9 @@ def show_image(request):
     
 @csrf_exempt
 def url_validate(request):
-    """ Send url as json encoded object : {"url": "..."}"""
+    """ Send url as json encoded object : {"url": "..."}
+        Example of working string is {"url": "https://dummy.com/dummy1/dummy2?param1=1&param2=2"}
+    """
     if request.method == "POST":
         try:
             url = json.loads(request.body)
