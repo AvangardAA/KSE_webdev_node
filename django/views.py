@@ -95,3 +95,7 @@ def metadata_text(request):
         }), content_type="application/json")
     else:
         return HttpResponseNotAllowed(permitted_methods=["GET", "PUT", "DELETE", "PATCH"])
+    
+def info(request):
+    return HttpResponse(content=json.dumps(
+        {"info": "file upload can be used via /metadata/, use form-data to attach file and search string to find\nurl validation can be accesed via /url_validate/ and body parameter 'url'\nand lastly image can be accessed through /image/"}), content_type="application/json")
