@@ -15,8 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from views import show_top_nbu_rates
+from views import show_top_nbu_rates, show_image, url_validate
 
 urlpatterns = [
     path("nbu_rates/", show_top_nbu_rates, name="rates"),
+    path("image/", show_image, name="rates"),
+    path("url_validate/", url_validate, name="url_validate")
 ]
