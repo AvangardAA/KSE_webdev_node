@@ -1,4 +1,6 @@
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseNotAllowed
+from django.core.validators import FileExtensionValidator
+from django.http.request import MultiPartParser
 from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import urlparse, parse_qs
 import os
@@ -34,7 +36,7 @@ def show_image(request, imagepth):
         else:
             return HttpResponseNotFound(json.dumps({"error": "image not found"}), content_type="application/json")
     else:
-        return HttpResponseBadRequest("wrong method")
+        return HttpResponseNotAllowed(permitted_methods=["GET", "PUT", "DELETE", "PATCH"])
     
 @csrf_exempt
 def url_validate(request):
@@ -72,4 +74,24 @@ def url_validate(request):
         except Exception as e:
             return HttpResponseBadRequest(content=json.dumps({"error": "something wrong with request body"}), content_type="application/json")
     else:
-        return HttpResponseBadRequest("wrong method")
+        return HttpResponseNotAllowed(permitted_methods=["GET", "PUT", "DELETE", "PATCH"])
+    
+@csrf_exempt
+def metadata_text(request):
+    """ In order to use this send file and search string in body as form-data """
+    if request.method == 'POST':
+        parser = MultiPartParser(request.META, request, request.upload_handlers)
+        post, flbuf = parser.parse()
+
+        fl = flbuf.get('file')
+        FileExtensionValidator(allowed_extensions=['txt'])(fl)
+        ftext = fl.read().decode('utf-8')
+        search = post.get('search', '')
+
+        return HttpResponse(content=json.dumps({
+            'length': len(ftext),
+            'alphas': sum(c.isalnum() for c in ftext),
+            'occurrences': ftext.lower().count(search.lower()),
+        }), content_type="application/json")
+    else:
+        return HttpResponseNotAllowed(permitted_methods=["GET", "PUT", "DELETE", "PATCH"])
