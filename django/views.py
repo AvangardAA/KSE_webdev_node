@@ -1,6 +1,7 @@
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import urlparse, parse_qs
+import os
 import requests
 import json
 
@@ -13,9 +14,25 @@ def show_top_nbu_rates(request):
 
     return HttpResponse(content=json.dumps(responseList), content_type="application/json")
 
-def show_image(request):
-    if request.method == "POST":
-        return HttpResponse()
+@csrf_exempt
+def show_image(request, imagepth):
+    if request.method == "GET":
+        img_path = os.path.join("../assets", imagepth)
+        if os.path.exists(img_path) and os.path.isfile(img_path):
+            with open(img_path, 'rb') as fl:
+                img_send = fl.read()
+
+            content_map = {
+                '.png': 'image/png',
+                '.jpeg': 'image/jpeg',
+                '.jpg': 'image/jpeg',
+            }
+            _, ext = os.path.splitext(img_path)
+            content_type = content_map.get(ext, 'application/octet-stream')
+
+            return HttpResponse(img_send, content_type=content_type)
+        else:
+            return HttpResponseNotFound(json.dumps({"error": "image not found"}), content_type="application/json")
     else:
         return HttpResponseBadRequest("wrong method")
     
