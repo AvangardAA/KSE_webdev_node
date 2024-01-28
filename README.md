@@ -4,3 +4,7 @@ In order to test CORS and run application correctly please refer to this screens
 
 For Django project, this screenshot is a proof that fetching and showing top 10 rates work
 <img width="959" alt="djangoprojtest" src="https://github.com/AvangardAA/KSE_webdevelopment/assets/70914823/f24e6959-8d6e-4028-b8c6-e7028ad5cbe6">
+
+Example of using file upload in Postman
+
+![Screenshot from 2024-01-29 01-22-41](https://github.com/AvangardAA/KSE_webdevelopment/assets/70914823/1cd181fb-1576-4457-90b9-c7382c762355)
