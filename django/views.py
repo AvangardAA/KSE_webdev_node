@@ -36,7 +36,7 @@ def show_image(request, imagepth):
         else:
             return HttpResponseNotFound(json.dumps({"error": "image not found"}), content_type="application/json")
     else:
-        return HttpResponseNotAllowed(permitted_methods=["GET", "PUT", "DELETE", "PATCH"])
+        return HttpResponseNotAllowed(permitted_methods=["POST", "PUT", "DELETE", "PATCH"])
     
 @csrf_exempt
 def url_validate(request):
