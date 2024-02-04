@@ -1,0 +1,12 @@
+h1 Create new fruit to be added to KSE first floor shop :)
+form(action="/fruit" method="POST")
+  label(for="name") Name:
+  input(type="text" name="name" required)
+  br
+  label(for="price") Price:
+  input(type="number" name="price" required)
+  br
+  label(for="fresh_till") Fresh Till:
+  input(type="date" name="fresh_till" required)
+  br
+  button(type="submit") Create fruit
