@@ -3,6 +3,7 @@ const app = express();
 const port = 1234;
 const main_routes = require("./routes/main_routes");
 const fruit_routes = require("./routes/fruit_routes");
+const header_cookie_routes = require('./routes/head_cook');
 const bodyParser = require('body-parser');
 
 // const PostmanUserAgentStr = "PostmanRuntime/7.36.1"; // here use your postman user agent string to test CORS UPD: no longer needed
@@ -30,6 +31,7 @@ app.use((req, res, next) =>
 
 app.use("/", main_routes);
 app.use("/fruit/", fruit_routes);
+app.use("/hc/", header_cookie_routes);
 
 app.listen(port, () =>
 {
