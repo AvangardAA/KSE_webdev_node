@@ -1,0 +1,33 @@
+body {
+    background-color: #222;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+h1 {
+    color: #ffa500;
+}
+
+button {
+    background-color: #ffa500;
+    color: #222;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #ff8c00;
+}
+
+.reports-column {
+    display: flex;
+    flex-direction: column;
+}

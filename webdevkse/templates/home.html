@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto aggregator KSE</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1>Binance market</h1>
+            <div id="feed-container">
+            </div>
+        </div>
+        <div class="reports-column">
+            <div>
+                <h1>Reports</h1>
+                <div id="report-container">
+                </div>
+                <button onclick="get_reports()">Get reports</button>
+            </div>
+            <div>
+                <h1>Reports Control Panel</h1>
+                <form id="report-form">
+                    <label for="report-name">Report name:</label>
+                    <input type="text" id="report-name" name="report-name" required><br>
+                    <label for="report-comment">Report comment:</label><br>
+                    <textarea id="report-comment" name="report-comment" rows="4" cols="50"></textarea><br>
+                    <button type="button" onclick="create_report()">Submit report</button>
+                    <button type="button" onclick="update_report()">Update report</button>
+                    <button type="button" onclick="delete_report()">Delete report</button>
+                </form>
+            </div>
+        </div>        
+        <div>
+            <h1>Best arbitrage opportunity</h1>
+            <div id="best-opportunity">
+            </div>
+            <button onclick="get_best_opp()">Check best opportunity</button>
+        </div>
+    </div>
+    
+    <h1>Compare across exchanges</h1>
+    <div id="compare-container">
+    </div>
+
+    <button onclick="compare()">See comparison</button>
+
+    <script src="{% static 'scripts.js' %}"></script>
+</body>
+</html>
+
