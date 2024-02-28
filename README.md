@@ -48,8 +48,14 @@ Great, now you have a fully working application, log files are located in
 rootdir/webdev/webdev/nodejs/logs/ws_service.log - for Nodejs
 rootdir/webdev/python_logs.log - for Django
 ```
+
 ## Application usage:
 
 To begin with application, visit in your browser http://localhost:8000/
+
+# 1: 
+Here you can see live market feed from Binance for BTC, ETH, XRP, MATIC and DOT
+
+![Screenshot from 2024-02-28 13-34-51](https://github.com/AvangardAA/KSE_webdev_node/assets/70914823/02915dcd-0cb8-411f-b1ab-4c0c02f826dd)
 
 This application is single-page, so everything user-oriented located here.
