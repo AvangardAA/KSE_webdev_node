@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.cache import cache
 from django.views.decorators.csrf import csrf_exempt
+import logging
+from datetime import datetime
+import pytz
 
 from pymongo import MongoClient
 
@@ -13,7 +16,12 @@ db = client.get_database('test')
 opp_collection = db.arbitragecycles
 report_collection = db.reports
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+logger.addHandler(logging.FileHandler('python_logs.log'))
+
 def home(request):
+    logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- home retrieved")
     return render(request, 'home.html')
 
 def get_best_opp(request):
@@ -24,6 +32,7 @@ def get_best_opp(request):
         'cycle': b_opp['cycle'],
         'result': b_opp['result']
     }
+    logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- best opportunity retrieved, result: " + str(b_opp_dict["result"]))
     return JsonResponse(b_opp_dict)
 
 @csrf_exempt
@@ -42,6 +51,7 @@ def report(request):
                 'arbitrage_opportunity': float(dt.get('arbitrage_opportunity'))
             }
             res = report_collection.insert_one(report)
+            logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report created")
             return JsonResponse({'msg': 'report creation success'})
         
         elif r_type == 'update':
@@ -52,20 +62,26 @@ def report(request):
             }
             res = report_collection.update_one({'title': dt.get('title')}, {'$set': report})
             if res.modified_count == 0:
+                logger.error(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report not found on update")
                 return JsonResponse({'msg': 'report not found'}, status=404)
+            logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report updated")
             return JsonResponse({'msg': 'report update success'})
         
         elif r_type == 'delete':
             res = report_collection.delete_one({'title': dt.get('title')})
             if res.deleted_count == 0:
+                logger.error(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report not found on delete")
                 return JsonResponse({'msg': 'report not found'}, status=404)
+            logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report deleted")
             return JsonResponse({'msg': 'report delete success'})
         
     if request.method == "GET":
         reports = list(report_collection.find().sort('_id', -1).limit(3))
         sreport = [{'title': rep['title'], 'comment': rep['comment'], 'arbitrage_opportunity': rep['arbitrage_opportunity']} for rep in reports]
+        logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- reports retrieved")
         return JsonResponse(sreport, safe=False)
     
+    logger.error(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- bad request for report")
     return JsonResponse({'msg': 'bad request'}, status=400)
 
 def compare(request):
@@ -77,6 +93,7 @@ def compare(request):
 
     cache_c = cache.get('comp_dt')
     if cache_c:
+        logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- retrieving cached comparison info")
         return JsonResponse(cache_c)
 
     bin_dt = requests.get("https://api.binance.com/api/v3/ticker/24hr").json()
@@ -112,6 +129,8 @@ def compare(request):
             'volume': float(i['volume']),
         })
 
+    logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- cache set")
     cache.set('comp_dt', comp_dt, 30)
 
+    logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- comparison retrieved")
     return JsonResponse(comp_dt)

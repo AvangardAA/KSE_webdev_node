@@ -1,3 +1,19 @@
+const fs = require('fs');
+const path = require('path');
+
+const logpath = path.join(__dirname, 'logs', 'ws_service.log');
+
+function logws(msg) 
+{
+    fs.appendFile(logpath, `${new Date().toISOString()} - ${msg}\n`, (e) => 
+    {
+        if (e) 
+        {
+            console.error('cant write to file: ', e);
+        }
+    });
+}
+
 const WebSocket = require('ws');
 const mongoose = require('mongoose');
 const uri_m = 'mongodb+srv://dbkse:pzz6CHKyqqjxa0CW@cluster0.pc3wpi6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
@@ -6,7 +22,7 @@ const db = mongoose.connection;
 const ws_client = new WebSocket('ws://localhost:8000/ws/bin_feed/');
 
 db.on('error', console.error.bind(console, 'error connecting to mongo:'));
-db.once('open', () => console.log('connect to mongo success'));
+db.once('open', () => logws('connect to mongo success'));
 
 const arb_schema = new mongoose.Schema({
     cycle: String,
@@ -20,7 +36,7 @@ let lastArbTs = {};
 
 ws_client.on('open', function open() 
 {
-    console.log('connect to consumer success');
+    logws('connect to consumer success');
 });
 
 function find_res(prices) 
@@ -67,12 +83,12 @@ ws_client.on('message', async function incoming(msg)
                     } 
                     catch (e) 
                     {
-                        console.error("duplicate exists in mongo", e);
+                        logws("duplicate exists in mongo");
                     }
                 } 
                 else 
                 {
-                    console.log("duplicate exists in mongo");
+                    logws("duplicate exists in mongo");
                 }
 
                 setTimeout(() => 
