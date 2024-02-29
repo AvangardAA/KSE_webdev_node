@@ -14,7 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
+from django.urls import path, re_path
 
 from .consumer import BinanceConsumer
 from .views import home, compare, get_best_opp, report
@@ -27,5 +27,6 @@ urlpatterns = [
     path('', home, name='home'),
     path('compare/', compare, name="compare"),
     path('get_best_opp/', get_best_opp, name="opportunity"),
-    path('report/', report, name="report")
+    path('report/', report, name="report"),
+    re_path(r'^.*$', home, name='n404') # all not found to home
 ]

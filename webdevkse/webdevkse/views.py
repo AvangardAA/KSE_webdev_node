@@ -26,14 +26,16 @@ def home(request):
 
 def get_best_opp(request):
     """ returns best arbitrage opportunity to frontend from database """
-    
-    b_opp = opp_collection.find_one({}, sort=[('result', -1)])
-    b_opp_dict = {
-        'cycle': b_opp['cycle'],
-        'result': b_opp['result']
-    }
-    logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- best opportunity retrieved, result: " + str(b_opp_dict["result"]))
-    return JsonResponse(b_opp_dict)
+    if request.method == "GET":
+        b_opp = opp_collection.find_one({}, sort=[('result', -1)])
+        b_opp_dict = {
+            'cycle': b_opp['cycle'],
+            'result': b_opp['result']
+        }
+        logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- best opportunity retrieved, result: " + str(b_opp_dict["result"]))
+        return JsonResponse(b_opp_dict)
+    else:
+        return JsonResponse({'msg': 'bad request'}, status=400)
 
 @csrf_exempt
 def report(request):
@@ -90,47 +92,49 @@ def compare(request):
     """ 30 sec cache is used to provide general look on numbers there """ \
     """ so they can change in future and change will be visible by eye """ \
     """ PS: info from Bybit is from testnet, not main spot data to ease access to it"""
+    if request.method == "GET":
+        cache_c = cache.get('comp_dt')
+        if cache_c:
+            logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- retrieving cached comparison info")
+            return JsonResponse(cache_c)
 
-    cache_c = cache.get('comp_dt')
-    if cache_c:
-        logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- retrieving cached comparison info")
-        return JsonResponse(cache_c)
+        bin_dt = requests.get("https://api.binance.com/api/v3/ticker/24hr").json()
+        huobi_dt = requests.get("https://api.huobi.pro/market/tickers").json()
+        bybit_dt = requests.get("https://api-testnet.bybit.com/v5/market/tickers?category=spot").json()
 
-    bin_dt = requests.get("https://api.binance.com/api/v3/ticker/24hr").json()
-    huobi_dt = requests.get("https://api.huobi.pro/market/tickers").json()
-    bybit_dt = requests.get("https://api-testnet.bybit.com/v5/market/tickers?category=spot").json()
+        bin_c = { e['symbol']: e for e in bin_dt if e['symbol'] in ['BTCUSDT', 'ETHUSDT', 'XRPUSDT', 'MATICUSDT', 'DOTUSDT'] }
+        huobi_c = { e['symbol']: e for e in huobi_dt['data'] if e['symbol'] in ['btcusdt', 'ethusdt', 'xrpusdt', 'maticusdt', 'dotusdt'] }
+        bybit_c = { e['symbol']: e for e in bybit_dt['result']['list'] if e['symbol'] in ['BTCUSDT', 'ETHUSDT', 'XRPUSDT', 'MATICUSDT', 'DOTUSDT'] }
 
-    bin_c = { e['symbol']: e for e in bin_dt if e['symbol'] in ['BTCUSDT', 'ETHUSDT', 'XRPUSDT', 'MATICUSDT', 'DOTUSDT'] }
-    huobi_c = { e['symbol']: e for e in huobi_dt['data'] if e['symbol'] in ['btcusdt', 'ethusdt', 'xrpusdt', 'maticusdt', 'dotusdt'] }
-    bybit_c = { e['symbol']: e for e in bybit_dt['result']['list'] if e['symbol'] in ['BTCUSDT', 'ETHUSDT', 'XRPUSDT', 'MATICUSDT', 'DOTUSDT'] }
-
-    comp_dt = {}
-    
-    for s, i in bybit_c.items():
-        comp_dt[s] = {
-            'Bybit': {
-                'low': float(i['lowPrice24h']),
-                'high': float(i['highPrice24h']),
-                'volume': float(i['volume24h']),
+        comp_dt = {}
+        
+        for s, i in bybit_c.items():
+            comp_dt[s] = {
+                'Bybit': {
+                    'low': float(i['lowPrice24h']),
+                    'high': float(i['highPrice24h']),
+                    'volume': float(i['volume24h']),
+                }
             }
-        }
 
-    for s, i in huobi_c.items():
-        comp_dt[s.upper()].setdefault('Huobi', {
-            'low': float(i['low']),
-            'high': float(i['high']),
-            'volume': float(i['vol']),
-        })
+        for s, i in huobi_c.items():
+            comp_dt[s.upper()].setdefault('Huobi', {
+                'low': float(i['low']),
+                'high': float(i['high']),
+                'volume': float(i['vol']),
+            })
 
-    for s, i in bin_c.items():
-        comp_dt[s.upper()].setdefault('Binance', {
-            'low': float(i['lowPrice']),
-            'high': float(i['highPrice']),
-            'volume': float(i['volume']),
-        })
+        for s, i in bin_c.items():
+            comp_dt[s.upper()].setdefault('Binance', {
+                'low': float(i['lowPrice']),
+                'high': float(i['highPrice']),
+                'volume': float(i['volume']),
+            })
 
-    logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- cache set")
-    cache.set('comp_dt', comp_dt, 30)
+        logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- cache set")
+        cache.set('comp_dt', comp_dt, 30)
 
-    logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- comparison retrieved")
-    return JsonResponse(comp_dt)
+        logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- comparison retrieved")
+        return JsonResponse(comp_dt)
+    else:
+        return JsonResponse({'msg': 'bad request'}, status=400)
