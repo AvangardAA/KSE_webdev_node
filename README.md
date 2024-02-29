@@ -75,3 +75,8 @@ Here you can use full CRUD cycle, to read reports about covered opportunity, sub
 
 ![Screenshot from 2024-02-28 14-12-35](https://github.com/AvangardAA/KSE_webdev_node/assets/70914823/d82e62e6-89e2-4576-bdbf-cc3cc0ce57f7)
 
+## Additional info:
+
+Inside code there are comments about some not obvious functions, everything else is relatively simple and we covered it in class.
+
+Every missing URL path is processed and home page sent back, since its single page application. Supported methods are available inside code for each view, if view accesed with unsupported one - bad request is returned back (error handling)
