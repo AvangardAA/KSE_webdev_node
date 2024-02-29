@@ -65,3 +65,13 @@ Here you can get comparison for all this instruments across various cryptoexchan
 
 ![Screenshot from 2024-02-28 14-12-48](https://github.com/AvangardAA/KSE_webdev_node/assets/70914823/404f2f17-48d8-402c-857b-1623e7623b68)
 
+# 3:
+Here you can get best arbitrage opportunity recorded by microservice, based on data which it receives from main Django application. The opportunity is saved in database
+
+![Screenshot from 2024-02-28 14-12-42](https://github.com/AvangardAA/KSE_webdev_node/assets/70914823/993587d8-796f-42d2-bfec-a59cae96cc3a)
+
+# 4:
+Here you can use full CRUD cycle, to read reports about covered opportunity, submit report and comment about recorded one, update the comment of some report and delete it.
+
+![Screenshot from 2024-02-28 14-12-35](https://github.com/AvangardAA/KSE_webdev_node/assets/70914823/d82e62e6-89e2-4576-bdbf-cc3cc0ce57f7)
+
