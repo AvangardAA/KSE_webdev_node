@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.FileHandler('python_logs.log'))
 
+def err_handle(msg, status):
+    return JsonResponse({'msg': msg}, status=status)
+
 def home(request):
     logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- home retrieved")
     return render(request, 'home.html')
@@ -35,7 +38,7 @@ def get_best_opp(request):
         logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- best opportunity retrieved, result: " + str(b_opp_dict["result"]))
         return JsonResponse(b_opp_dict)
     else:
-        return JsonResponse({'msg': 'bad request'}, status=400)
+        return err_handle('bad request', 400)
 
 @csrf_exempt
 def report(request):
@@ -65,7 +68,7 @@ def report(request):
             res = report_collection.update_one({'title': dt.get('title')}, {'$set': report})
             if res.modified_count == 0:
                 logger.error(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report not found on update")
-                return JsonResponse({'msg': 'report not found'}, status=404)
+                return err_handle('report not found', 404)
             logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report updated")
             return JsonResponse({'msg': 'report update success'})
         
@@ -73,7 +76,7 @@ def report(request):
             res = report_collection.delete_one({'title': dt.get('title')})
             if res.deleted_count == 0:
                 logger.error(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report not found on delete")
-                return JsonResponse({'msg': 'report not found'}, status=404)
+                return err_handle('report not found', 404)
             logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- report deleted")
             return JsonResponse({'msg': 'report delete success'})
         
@@ -84,7 +87,7 @@ def report(request):
         return JsonResponse(sreport, safe=False)
     
     logger.error(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- bad request for report")
-    return JsonResponse({'msg': 'bad request'}, status=400)
+    return err_handle('bad request', 400)
 
 def compare(request):
     """ this endpoint shows difference between 3 exchanges and 5 pairs on them """ \
@@ -137,4 +140,4 @@ def compare(request):
         logger.debug(str(datetime.now(pytz.timezone("Europe/Kyiv"))) + "- comparison retrieved")
         return JsonResponse(comp_dt)
     else:
-        return JsonResponse({'msg': 'bad request'}, status=400)
+        return err_handle('bad request', 400)
