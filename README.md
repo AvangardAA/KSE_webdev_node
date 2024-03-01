@@ -8,6 +8,17 @@
 5. Logging supported
 ```
 
+## HW 11 Docs and comments:
+
+```
+1. Logging used from python library logging, divided into debug logs and error type logs, stored under same file. File is captured by Django module, so its in Django root directory
+2. Caching strategy used is in-memory cache, used one is in-built in Django. Provided by django framework as interface, simple and reliable
+3. Error handling realised as single function which holds task to return errors with appropriate text and messages
+4. Performance optimization in this application is probably not suitable, since functionality is minimalistic and written in grouped way and caching is implemented for slow endpoint (compare)
+5. Documentation: inside code and here in docs
+6. Security: logs dont expose sensitive info, theyre minimalistic and informative
+```
+
 # Project description
 
 My project topic is cryptocurrency data aggregator, for its implementation here Django and Nodejs are used.
