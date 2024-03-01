@@ -1,4 +1,14 @@
-## Project description
+## HW 10 Docs and comments:
+
+```
+1. Database used - MongoDB, cloud based
+2. Database configuration - Free cluster up to 500mb, network settings accept 0.0.0.0/0 (all hosts)
+3. Data models - Arbitrage cycles and reports, first holds best arbitrage opportunities covered by microservice, second one holds user created reports
+4. API - report/get_best_opportunity/compare - CRUD supported on report endpoint, request validation checks request method and availability of info. Error handling implemented
+5. Logging supported
+```
+
+# Project description
 
 My project topic is cryptocurrency data aggregator, for its implementation here Django and Nodejs are used.
 Django serves as a web-server which handles user interaction, database operations and channel with microservice.
